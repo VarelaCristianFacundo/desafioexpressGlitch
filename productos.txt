@@ -1,0 +1,27 @@
+[
+    {
+        "id":1,
+        "title":"Logo",
+        "price":1000
+    },
+    {
+        "id":2,
+        "title":"Manual de Marca",
+        "price":5000
+    },
+    {
+        "id":3,
+        "title":"Diseño Web",
+        "price":10000
+    },
+    {
+        "id":4,
+        "title":"Diseño Web & Manual de Marca",
+        "price":13000
+    },
+    {
+        "id":5,
+        "title":"Diseño Web & Manual de Marca & Logo",
+        "price":13500
+    }
+]
