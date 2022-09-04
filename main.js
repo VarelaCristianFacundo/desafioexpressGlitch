@@ -16,6 +16,74 @@ const getProductsByID = async (idProductoRandom) => {
     return producto;
 };
 
+
+// CREAR NUESTROS PROPIOS MIDDLEWARES. EJEMPLO DE LOGUEO
+const Logger = (req, res, next) => {
+
+
+    console.log("Logged", new Date());
+    next();
+}
+
+// MIDDLEWARES
+/*ESTAS DOS LINEAS SIEMPRE TIENEN QUE ESTAR, YA QUE SON TRADUCCIONES A JSON*/
+app.use(express.urlencoded({
+    extended: true
+}));
+app.use(express.json())
+/*ESTAS DOS LINEAS SIEMPRE TIENEN QUE ESTAR*/
+
+
+app.use(Logger);
+//PARAMS Query con 1 contenido: /usuario/:id
+// Para enviar mas de 1 contenido, se usan las query ?query1=1&query2=2
+app.get('/usuario', (req, res) => {
+
+    // POST RECIBE EL BODY, SIRVE PARA UN CONTENIDO MAS EXTENSO    
+    app.post("/usuario", (req, res) => {
+        res.send({
+            metodo: "post",
+            body: req.body
+        });
+    })
+
+
+    res.send({
+        metod: "get",
+        query: req.query,
+        params: req.params
+    })
+})
+
+
+/* PUT ACTUALIZAR BASE DE DATOS */
+app.put("/usuario/:id", (req, res) => {
+    res.send({
+        metodo: "put",
+        body: req.body,
+        params: req.params
+    })
+});
+
+
+/* DELETE */
+app.delete("/usuario/:id", (req, res) => {
+    res.send({
+        metodo: "delete",
+        params: req.params
+    })
+});
+
+
+
+
+
+
+
+
+
+
+
 // VISTA DE PÁGINA PRINCIPAL
 app.get("/", (req, res) => {
     res.send(`
@@ -40,9 +108,9 @@ app.get("/productos", (req, res) => {
                     <div>
                         <span>${element.id}: ${element.title} - Precio: $${element.price}</span>
                     </div>
-                `)                 
+                `)
                 });
-                arrayProductos.push(`<a href="/">Home</a>`)                 
+                arrayProductos.push(`<a href="/">Home</a>`)
                 res.send(arrayProductos.toLocaleString())
             })
             .catch((error) => console.log(error))
@@ -79,7 +147,7 @@ app.get("/productoRandom", (req, res) => {
                 </table>
                 <a href="/">Home</a>
                 `)
-                
+
             })
             .catch((error) => console.log(error))
             .finally(() => console.log("Terminado"))
