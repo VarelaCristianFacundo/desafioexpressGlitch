@@ -16,6 +16,10 @@ app.use('/api/productos', productosRouter)
 app.use ('/', express.static(__dirname + "/assets"))
 
 
-app.listen(8080, () => {
-    console.log('Server inciado');
-})
+const server = app.listen(8080, () => {
+    console.log("Servidor iniciado");
+});
+
+server.on("error", (error) => {
+    console.error(`Error: ${error}`);
+});

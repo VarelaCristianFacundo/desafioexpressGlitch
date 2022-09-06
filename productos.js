@@ -39,7 +39,12 @@ router.get('/', (req, res) => {
 // GET PARA TRAER UN SOLO PRODUCTO POR ID
 router.get('/:id', (req, res) => {
     const {id} = req.params;
-    res.send(Productos[id-1]);
+    
+    if(Productos.length<id){
+        res.status(403).send({error: true, msg: "Producto no encontrado"})
+    }else{
+        res.send(Productos[id-1]);
+    }
 })
 
 // POST PARA AGREGAR UN PRODUCTO Y MOSTRARLO
