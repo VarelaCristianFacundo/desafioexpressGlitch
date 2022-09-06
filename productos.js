@@ -1,53 +1,100 @@
-// CONSTANTE FS PARA LEER EL ARCHIVO TXT
-const fs = require("fs");
+const express = require("express");
+const app = express();
+const multer = require("multer");
+const { Router } = express;
 
-class Productos {
+const router = Router();
+let Productos = [];
+let id = Productos.length;
+let archivo = "";
 
-    // CONSTRUCTOR
-    constructor(fileName) {
-        this._filename = fileName;
-        this._readFileOrCreateNewOne();
-    }
 
-    async _readFileOrCreateNewOne() {
-        try {
-            // LEO EL ARCHIVO DE LA BD (PRODUCTOS.TXT)
-            await fs.promises.readFile(this._filename, "utf-8");
-        } catch (error) {
-            error.code === "ENOENT" ?
-                this._createEmptyFile() :
-                console.log(
-                    `Error Code: ${error.code} | There was an unexpected error when trying to read ${this._filename}`
-                );
+// MIDDLEWARES
+/*ESTAS DOS LINEAS SIEMPRE TIENEN QUE ESTAR, YA QUE SON TRADUCCIONES A JSON*/
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
+/*ESTAS DOS LINEAS SIEMPRE TIENEN QUE ESTAR*/
+
+
+// CONFIGURADO MULTER
+const storage = multer.diskStorage({
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname)
+    },
+    destination: (req, file, cb) => {
+        cb(null, 'uploads')
+    },
+})
+
+// EJECUCION PARA TABAJAR LOCALMENTE EL MULTER
+const upload = multer({storage})
+
+
+// GET PARA TRAER TODOS LOS PRODUCTOS
+router.get('/', (req, res) => {
+    res.send({ Productos })
+})
+
+// GET PARA TRAER UN SOLO PRODUCTO POR ID
+router.get('/:id', (req, res) => {
+    const {id} = req.params;
+    res.send(Productos[id-1]);
+})
+
+// POST PARA AGREGAR UN PRODUCTO Y MOSTRARLO
+router.post('/', (req, res) => {
+    const contador = Productos.length;
+    const { title, price, file } = req.body;
+    Productos.push({
+        id : contador,
+        title,
+        price,
+        file
+    })
+    res.send({
+        Agregado: {
+            contador,
+            title,
+            price,
+            file
         }
+    })
+})
+
+// REEMPLAZO PRODUCTO SEGUN ID
+router.put('/:id', (req, res) => {
+    const { id } = req.params;
+    const { title, price, file } = req.body;
+    const anterior = Productos[id - 1];   
+
+
+    Productos[id-1] = {
+        id : id - 1,
+        title,
+        price,
+        file
     }
-
-    // FUNCIÓN PARA TRAER UN PRODUCTO POR ID
-    async getById(id) {
-        try {
-            const data = await this.getData();
-            const parsedData = JSON.parse(data);
-
-            return parsedData.find((producto) => producto.id === id);
-        } catch (error) {
-            console.log(
-                `Error Code: ${error.code} | There was an error when trying to get an element by its ID (${id})`
-            );
+    const actualizado = Productos[id - 1]
+    res.send({
+        actualizado,
+        nuevo: {
+            anterior
         }
-    }
+    })
+})
 
-    // FUNCIÓN PARA DEVOLVER LA INFO DEL ARCHIVO
-    async getData() {
-        const data = await fs.promises.readFile(this._filename, "utf-8");
-        return data;
-    }
 
-    // FUNCIÓN PARA DEVOLVER LA INFO DEL ARCHIVO EN JSON
-    async getAll() {
-        const data = await this.getData();
-        return JSON.parse(data);
+// ELIMINO PRODUCTO SEGUN ID
+router.delete('/:id', (req, res) => {
+    const { id } = req.params;
+    const producto = Productos[id - 1];
 
-    }
-}
+    Productos = Productos.filter((producto) => producto !== Productos[id - 1])
 
-module.exports = Productos;
+    res.send({
+        eliminado: producto
+    })
+})
+
+module.exports = router;
