@@ -1,4 +1,5 @@
 const express = require("express");
+const handlebars = require('express-handlebars')
 const app = express();
 const productosRouter = require('./productos')
 
@@ -11,10 +12,23 @@ app.use(express.urlencoded({
 }));
 /*ESTAS DOS LINEAS SIEMPRE TIENEN QUE ESTAR*/
 
-app.use('/api/productos', productosRouter)
+/* HBS */
+app.engine("hbs", handlebars.engine({
+    extname: 'hbs',
+    layoutsDir: __dirname + '/views/layouts',
+    defaultLayout: 'index'
+}))
+
+app.set ('views', './views');
+app.set('view engine', 'hbs')
+
+
+app.use('/', productosRouter)
 
 app.use ('/', express.static(__dirname + "/assets"))
 
+
+/* HBS */
 
 const server = app.listen(8080, () => {
     console.log("Servidor iniciado");

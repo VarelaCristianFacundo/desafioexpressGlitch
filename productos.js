@@ -32,8 +32,8 @@ const upload = multer({storage})
 
 
 // GET PARA TRAER TODOS LOS PRODUCTOS
-router.get('/', (req, res) => {
-    res.send({ Productos })
+router.get('/productos', (req, res) => {
+    res.render('main',{layout:'index', Productos})
 })
 
 // GET PARA TRAER UN SOLO PRODUCTO POR ID
